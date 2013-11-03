@@ -50,16 +50,16 @@ func Create(db *sql.DB, table string, record map[string]interface{}) (err error)
   return err
 }
 
-func insertShape(sides int, name string) (query string) {
- return fmt.Sprintf("INSERT INTO shapes (sides, name) VALUES('%d', '%s')",
-  sides, name)
-}
-
-func selectShape(name string) (query string) {
-  return fmt.Sprintf("SELECT * FROM shapes WHERE name = '%s'",
-    name)
-}
-
+// func insertShape(sides int, name string) (query string) {
+//  return fmt.Sprintf("INSERT INTO shapes (sides, name) VALUES('%d', '%s')",
+//   sides, name)
+// }
+//
+// func selectShape(name string) (query string) {
+//   return fmt.Sprintf("SELECT * FROM shapes WHERE name = '%s'",
+//     name)
+// }
+//
 // func main() {
 //   dbPg, err := sql.Open("postgres", "user=stuart dbname=gothings sslmode=disable")
 //   if err != nil {
