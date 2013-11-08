@@ -5,7 +5,6 @@ import (
   "database/sql"
   "fmt"
   "strings"
-  "reflect"
 )
 
 func ConnectTo(username string, database string, sslmode string) (dbConn *sql.DB, err error) {
@@ -41,11 +40,7 @@ func Find(db *sql.DB, table string, id int, result map[string]interface{}) (map[
   row.Next()
   row.Scan(valuePtrs...)
   for i, v := range columns {
-    if reflect.TypeOf(values[i]).String() == "[]uint8" {
-      result[v] = string(values[i].([]uint8))
-    } else if reflect.TypeOf(values[i]).String() == "int64" {
-      result[v] = int64(values[i].(int64))
-    }
+    result[v] = Cast(values[i])
   }
   return result, nil
 }

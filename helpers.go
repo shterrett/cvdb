@@ -4,7 +4,18 @@ import (
   _ "github.com/lib/pq"
   "fmt"
   "strings"
+  "reflect"
 )
+
+func Cast(value interface{}) interface{} {
+  var result interface{}
+  if reflect.TypeOf(value).String() == "[]uint8" {
+    result = string(value.([]uint8))
+  } else if reflect.TypeOf(value).String() == "int64" {
+    result = int64(value.(int64))
+  }
+  return result
+}
 
 func ColNames(record map[string]interface{}) []string {
   columnNames := make([]string, 0)
