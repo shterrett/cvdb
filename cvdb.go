@@ -44,3 +44,30 @@ func Find(db *sql.DB, table string, id int, result map[string]interface{}) (map[
   }
   return result, nil
 }
+
+func FindAll(db *sql.DB, table string, result []map[string]interface{}) ([]map[string]interface{}, error) {
+  queryString := fmt.Sprintf("SELECT * FROM %s", table)
+  rows, err := db.Query(queryString)
+  if err != nil {
+    return nil, err
+  }
+  columns, err := rows.Columns()
+  if err != nil {
+    return nil, err
+  }
+  for rows.Next() == true {
+    record := make([]interface{}, len(columns))
+    recordPointer := make([]interface{}, len(columns))
+    for i, _ := range columns {
+      record[i] = nil
+      recordPointer[i] = &record[i]
+    }
+    rows.Scan(recordPointer...)
+    rowMap := make(map[string]interface{})
+    for i, v := range columns {
+      rowMap[v] = Cast(record[i])
+    }
+    result = append(result, rowMap)
+  }
+  return result, nil
+}
