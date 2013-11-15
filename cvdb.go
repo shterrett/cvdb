@@ -22,7 +22,7 @@ func Create(db *sql.DB, table string, record map[string]interface{}) (err error)
   return err
 }
 
-func Find(db *sql.DB, table string, id int, result map[string]interface{}) (map[string]interface{}, error) {
+func Find(db *sql.DB, table string, id int) (map[string]interface{}, error) {
   queryString := fmt.Sprintf("SELECT * FROM %s WHERE id = %d", table, id)
   row, err := db.Query(queryString)
   if err != nil {
@@ -32,20 +32,12 @@ func Find(db *sql.DB, table string, id int, result map[string]interface{}) (map[
   if err != nil {
     return nil, err
   }
-  values := make([]interface{}, len(columns))
-  valuePtrs := make([]interface{}, len(columns))
-  for i, _ := range columns {
-    valuePtrs[i] = &values[i]
-  }
   row.Next()
-  row.Scan(valuePtrs...)
-  for i, v := range columns {
-    result[v] = Cast(values[i])
-  }
-  return result, nil
+  record := makeRecord(columns, row)
+  return record, nil
 }
 
-func FindAll(db *sql.DB, table string, result []map[string]interface{}) ([]map[string]interface{}, error) {
+func FindAll(db *sql.DB, table string) ([]map[string]interface{}, error) {
   queryString := fmt.Sprintf("SELECT * FROM %s", table)
   rows, err := db.Query(queryString)
   if err != nil {
@@ -55,19 +47,25 @@ func FindAll(db *sql.DB, table string, result []map[string]interface{}) ([]map[s
   if err != nil {
     return nil, err
   }
+  result := make([]map[string]interface{}, 0)
   for rows.Next() == true {
-    record := make([]interface{}, len(columns))
-    recordPointer := make([]interface{}, len(columns))
-    for i, _ := range columns {
-      record[i] = nil
-      recordPointer[i] = &record[i]
-    }
-    rows.Scan(recordPointer...)
-    rowMap := make(map[string]interface{})
-    for i, v := range columns {
-      rowMap[v] = Cast(record[i])
-    }
-    result = append(result, rowMap)
+    record := makeRecord(columns, rows)
+    result = append(result, record)
   }
   return result, nil
+}
+
+func makeRecord(columns []string, row *sql.Rows) map[string]interface{} {
+  record := make([]interface{}, len(columns))
+  recordPointer := make([]interface{}, len(columns))
+  for i, _ := range columns {
+    record[i] = nil
+    recordPointer[i] = &record[i]
+  }
+  row.Scan(recordPointer...)
+  rowMap := make(map[string]interface{})
+  for i, v := range columns {
+    rowMap[v] = Cast(record[i])
+  }
+  return rowMap
 }

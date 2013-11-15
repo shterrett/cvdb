@@ -55,11 +55,7 @@ var _ = Describe("database operations", func() {
   Describe("finding records", func() {
     It("finds by id", func() {
       db.Exec("INSERT INTO shapes (id, name, sides) VALUES(4, 'pentagon', 5)")
-      result := make(map[string]interface{})
-      result["id"] = nil
-      result["name"] = nil
-      result["sides"] = nil
-      result, err := cvdb.Find(db, "shapes", 4, result)
+      result, err := cvdb.Find(db, "shapes", 4)
       if err != nil {
         fmt.Println(err)
       }
@@ -70,8 +66,7 @@ var _ = Describe("database operations", func() {
     It("finds all records in a table", func() {
       db.Exec("INSERT INTO shapes (id, name, sides) VALUES(1, 'pentagon', 5)")
       db.Exec("INSERT INTO shapes (id, name, sides) VALUES(2, 'square', 4)")
-      result := make([]map[string]interface{}, 0)
-      result, err := cvdb.FindAll(db, "shapes", result)
+      result, err := cvdb.FindAll(db, "shapes")
       if err != nil {
         fmt.Println(err)
       }
