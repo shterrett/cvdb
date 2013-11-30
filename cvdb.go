@@ -55,6 +55,25 @@ func FindAll(db *sql.DB, table string) ([]map[string]interface{}, error) {
   return result, nil
 }
 
+func FindAllWhere(db *sql.DB, table string, column string, value string) ([]map[string]interface{}, error) {
+  queryString := fmt.Sprintf("SELECT * FROM %s WHERE %s = %s", table, column, value)
+  fmt.Println(queryString)
+  rows, err := db.Query(queryString)
+  if err != nil {
+    return nil, err
+  }
+  columns, err := rows.Columns()
+  if err != nil {
+    return nil, err
+  }
+  result := make([]map[string]interface{}, 0)
+  for rows.Next() == true {
+    record := makeRecord(columns, rows)
+    result = append(result, record)
+  }
+  return result, nil
+}
+
 func makeRecord(columns []string, row *sql.Rows) map[string]interface{} {
   record := make([]interface{}, len(columns))
   recordPointer := make([]interface{}, len(columns))

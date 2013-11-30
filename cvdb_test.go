@@ -82,4 +82,21 @@ var _ = Describe("database operations", func() {
       Expect(result).To(Equal(expectedResult))
     })
   })
+
+  Describe("where", func() {
+    It("returns results matching a simple condition", func() {
+      db.Exec("INSERT INTO shapes (id, name, sides) VALUES(4, 'pentagon', 5)")
+      db.Exec("INSERT INTO shapes (id, name, sides) VALUES(5, 'square', 4)")
+      result, err := cvdb.FindAllWhere(db, "shapes", "sides", "4")
+      if err != nil {
+        fmt.Println(err)
+      }
+      shape := make(map[string]interface{})
+      shape["id"] = int64(5)
+      shape["sides"] = int64(4)
+      shape["name"] = "square"
+      expectedResult := []map[string]interface{}{shape}
+      Expect(result).To(Equal(expectedResult))
+    })
+  })
 })
