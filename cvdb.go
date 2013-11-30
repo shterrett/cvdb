@@ -47,11 +47,7 @@ func FindAll(db *sql.DB, table string) ([]map[string]interface{}, error) {
   if err != nil {
     return nil, err
   }
-  result := make([]map[string]interface{}, 0)
-  for rows.Next() == true {
-    record := makeRecord(columns, rows)
-    result = append(result, record)
-  }
+  result := makeResult(columns, rows)
   return result, nil
 }
 
@@ -66,12 +62,17 @@ func FindAllWhere(db *sql.DB, table string, column string, value string) ([]map[
   if err != nil {
     return nil, err
   }
+  result := makeResult(columns, rows)
+  return result, nil
+}
+
+func makeResult(columns []string, rows *sql.Rows) []map[string]interface{} {
   result := make([]map[string]interface{}, 0)
   for rows.Next() == true {
     record := makeRecord(columns, rows)
     result = append(result, record)
   }
-  return result, nil
+  return result
 }
 
 func makeRecord(columns []string, row *sql.Rows) map[string]interface{} {
